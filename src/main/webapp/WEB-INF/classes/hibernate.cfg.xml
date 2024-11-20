@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+
+    <session-factory>
+
+        <!--<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/my_db</property>
+
+        <property name="connection.username">root</property>
+        <property name="connection.password">yaGrisha7872</property>-->
+
+        <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://localhost:3306/link_shortener</property>
+
+        <property name="connection.username">root</property>
+        <property name="connection.password">yaGrisha7872</property>
+
+        <property name="hibernate.transaction.coordinator_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+        <!--  thread is the short name for
+          org.hibernate.context.ThreadLocalSessionContext
+          and let Hibernate bind the session automatically to the thread
+        -->
+        <property name="current_session_context_class">thread</property>
+        <!-- this will show us all sql statements -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <property name="hibernate.id.new_generator_mappings">false</property>
+        <property name="hibernate.id.optimizer.prefer-sequential-start">false</property>
+
+        <!-- Создадим таблицу если ее нет
+        <property name="hibernate.hbm2ddl.import_files">create.sql</property>
+        <property name="hibernate.hbm2ddl.auto">create</property>-->
+
+
+        <!-- Маппинг классов Java к таблицам в базе данных -->
+        <mapping class="DAOLayer.Entity.Url"/>
+
+    </session-factory>
+
+
+</hibernate-configuration>
