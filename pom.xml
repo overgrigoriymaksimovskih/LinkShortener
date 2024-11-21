@@ -6,7 +6,7 @@
   <artifactId>LinkShortener</artifactId>
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>step1 Maven Webapp</name>
+  <name>step5 Maven Webapp</name>
   <url>http://maven.apache.org</url>
 
   <properties>

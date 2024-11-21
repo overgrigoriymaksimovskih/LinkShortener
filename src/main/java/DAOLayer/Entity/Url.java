@@ -1,6 +1,7 @@
 package DAOLayer.Entity;
 
 import jakarta.persistence.*;
+
 import java.sql.Timestamp;
 
 @Entity
@@ -9,17 +10,17 @@ public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    public int id;
+    private long id;;
     @Column(name = "original_url", length = 1000)
-    public String originalUrl;
+    private String originalUrl;
     @Column(name = "short_url", length = 45)
-    public String shortUrl;
+    private String shortUrl;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    public Timestamp createdAt;
+    private Timestamp createdAt;
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
-    public Timestamp updatedAt;
+    private Timestamp updatedAt;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
