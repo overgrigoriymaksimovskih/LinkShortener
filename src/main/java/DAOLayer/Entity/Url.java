@@ -17,8 +17,9 @@ public class Url {
     private String shortUrl;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private Timestamp createdAt;
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
-    private Timestamp updatedAt;
+//    @Column(name = "user_id", length = 45)
+    @Column(name = "user_id", length = 45, nullable = true)
+    private Long userId;
 
     public long getId() {
         return id;
@@ -52,11 +53,11 @@ public class Url {
         this.createdAt = createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

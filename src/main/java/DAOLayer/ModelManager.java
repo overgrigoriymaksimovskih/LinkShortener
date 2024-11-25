@@ -1,6 +1,6 @@
 package DAOLayer;
 
-import Controller.ControllerServlet;
+import Controller.LinkController.ControllerServlet;
 import DAOLayer.Entity.Url;
 import org.hibernate.Session;
 
@@ -50,7 +50,7 @@ public class ModelManager {
                 Url url = new Url();
                 url.setOriginalUrl(link);
                 url.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-                url.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+                url.setUserId(null);
                 session.save(url);
 
                 // Получить значение столбца AUTO_INCREMENT
@@ -72,6 +72,8 @@ public class ModelManager {
 
         } catch (Exception e) {
             System.out.println("Ошибко при обработке запроса: " + e.getMessage());
+            controllerServlet.update(response, "ошибка при работе с базой данных");
+            return;
         }
     }
 }

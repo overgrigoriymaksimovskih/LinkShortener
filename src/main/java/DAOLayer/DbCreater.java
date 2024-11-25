@@ -5,10 +5,7 @@ import View.ViewServlet;
 import javax.servlet.ServletContext;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 
 public class DbCreater {
@@ -48,7 +45,8 @@ public class DbCreater {
         String dbUrl = props.getProperty("db.url");
         String dbUser = props.getProperty("db.user");
         String dbPassword = props.getProperty("db.password");
-        String tableName = props.getProperty("table.name");
+        String table1Name = props.getProperty("table1.name");
+        String table2Name = props.getProperty("table2.name");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -81,25 +79,51 @@ public class DbCreater {
             stmt.executeUpdate("SET CHARACTER SET utf8");
             stmt.executeUpdate("SET COLLATION_CONNECTION=utf8_general_ci");
 
-            // Создание таблицы
-            String createTableQuery = "CREATE TABLE " + tableName + " (" +
+            // Создание таблицы users
+            String createUserTableQuery = "CREATE TABLE " + table1Name + " (" +
+                    "id BIGINT AUTO_INCREMENT NOT NULL, " +
+                    "login VARCHAR(45) NOT NULL, " +
+                    "password VARCHAR(100) NOT NULL, " +
+                    "PRIMARY KEY (id)) CHARACTER SET utf8 COLLATE utf8_general_ci";
+            stmt.executeUpdate(createUserTableQuery);
+            System.out.println("Table users created successfully...");
+
+            // Создание таблицы links с изменением поля updated_at
+            String createLinkTableQuery = "CREATE TABLE " + table2Name + " (" +
                     "id BIGINT AUTO_INCREMENT NOT NULL, " +
                     "original_url VARCHAR(1000) NULL, " +
                     "short_url VARCHAR(45) NULL, " +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                    "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, " +
-                    "PRIMARY KEY (id)) CHARACTER SET utf8 COLLATE utf8_general_ci";
-            stmt.executeUpdate(createTableQuery);
-            System.out.println("Table created successfully...");
+                    "user_id BIGINT NULL, " +
+                    "PRIMARY KEY (id), " +
+                    "FOREIGN KEY (user_id) REFERENCES "+ table1Name +"(id)) CHARACTER SET utf8 COLLATE utf8_general_ci";
+            stmt.executeUpdate(createLinkTableQuery);
+            System.out.println("Table links created successfully...");
 
-            // Создание первой тестовой строки в таблице
-                String insertQuery = "INSERT INTO " + tableName + " (original_url, short_url) VALUES ('https://www.example.com', 'example')";
-                stmt.executeUpdate(insertQuery);
-                System.out.println("First test row inserted successfully...");
-                DBisExist = true;
+            // Создание первой тестовой строки в таблице users
+            String insertUserQuery = "INSERT INTO " + table1Name + " (login, password) VALUES ('test', 'password')";
+            stmt.executeUpdate(insertUserQuery);
+            System.out.println("First test user inserted successfully...");
+
+            // Получение id первого тестового пользователя
+            String selectUserIdQuery = "SELECT id FROM " + table1Name + " WHERE login = 'test'";
+            ResultSet rs = stmt.executeQuery(selectUserIdQuery);
+            int userId = 0;
+            while (rs.next()) {
+                userId = rs.getInt("id");
+            }
+            rs.close();
+
+            // Создание первой тестовой строки в таблице links
+            String insertLinkQuery = "INSERT INTO " + table2Name +  "(original_url, short_url, user_id) VALUES ('https://www.example.com', 'example', " + userId + ")";
+            stmt.executeUpdate(insertLinkQuery);
+            System.out.println("First test link inserted successfully...");
+            DBisExist = true;
         } catch (SQLException e) {
             e.printStackTrace();
-            DBisExist = true;
+            if(1007 == 1007){
+                DBisExist = true;
+            }
         } finally {
             if (conn!= null) {
                 try {
