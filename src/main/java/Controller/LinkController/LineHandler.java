@@ -1,6 +1,8 @@
 package Controller.LinkController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,18 +23,48 @@ public class LineHandler {
         return instance;
     }
 
-    public String resetProtocol(HttpServletRequest request) {
-        String someParam = request.getParameter("value");
-        someParam.trim();
+
+//    public String resetProtocol(HttpServletRequest request) {
+//        String someParam = request.getQueryString();
+//        someParam = someParam.replace("value=", "");
+//        if(someParam.contains("ftp://")){
+//            someParam = someParam.replaceAll("^ftp?://", ""); // удаляем http:// или https://
+//            someParam =  "ftp://" + someParam;
+//        }else{
+//            someParam = someParam.replaceAll("^https?://", ""); // удаляем http:// или https://
+//            someParam = someParam.replaceAll("^www\\.", ""); // удаляем www.
+//            someParam =  "http://" + someParam;
+//        }
+//        someParam = UrlValidator.getInstance().isValid(someParam)? someParam : "";
+//        try {
+//            someParam = URLEncoder.encode(someParam, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return someParam;
+//    }
+
+
+    String resetProtocol(HttpServletRequest request) {
+        String someParam = request.getQueryString();
+        someParam = someParam.replace("value=", "");
         if(someParam.contains("ftp://")){
             someParam = someParam.replaceAll("^ftp?://", ""); // удаляем http:// или https://
-            return "ftp://" + someParam;
+            someParam =  "ftp://" + someParam;
         }else{
             someParam = someParam.replaceAll("^https?://", ""); // удаляем http:// или https://
             someParam = someParam.replaceAll("^www\\.", ""); // удаляем www.
-            return "http://" + someParam;
+            someParam =  "http://" + someParam;
         }
+        try {
+            someParam = URLEncoder.encode(someParam, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return someParam;
     }
+
+
     public boolean isEmpty(HttpServletRequest request) {
         String someParam = request.getParameter("value");
         if (someParam == null || someParam.isEmpty()) {
@@ -43,7 +75,7 @@ public class LineHandler {
     }
     public boolean isLink(HttpServletRequest request) {
         String someParam = request.getParameter("value");
-        Pattern pattern = Pattern.compile("^(https?:\\/\\/)?([\\p{L}\\d\\.-]+)\\.([\\p{L}\\.]{2,6})([\\/\\w\\.-]*)*\\/?$");
+        Pattern pattern = Pattern.compile("^[^\\.]*\\..{2,}.*");
         Matcher matcher = pattern.matcher(someParam);
         if (matcher.matches()) {
             return true;

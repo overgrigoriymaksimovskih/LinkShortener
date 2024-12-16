@@ -1,4 +1,4 @@
-package Controller.LoginController;
+package Controller.RegisterController;
 
 import Controller.Observer;
 import DAOLayer.ModelManager;
@@ -10,23 +10,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(value = {"/home/controller/login"})
-public class ControllerLoginServlet extends HttpServlet implements Observer {
+@WebServlet(value = {"/home/controller/register"})
+public class ControllerRegisterServlet extends HttpServlet implements Observer {
     ModelManager modelManager = ModelManager.getInstance();
-    HttpSession session;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        if (action!= null && action.equals("logout")) {
-            modelManager.handleLogout(this, request, response);
-        } else {
-            modelManager.handleLogin(this, response, request);
-        }
+        modelManager.handleRegister(this, response, request);
     }
 
     public void update(HttpServletResponse response, String result, String message) {

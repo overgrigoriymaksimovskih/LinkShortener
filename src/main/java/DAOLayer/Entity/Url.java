@@ -60,4 +60,8 @@ public class Url {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public String getShortUrlString() {
+        return this.originalUrl + " -> " + this.shortUrl;
+    }
 }

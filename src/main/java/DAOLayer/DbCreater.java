@@ -12,7 +12,6 @@ public class DbCreater {
     private static DbCreater instance;
     private static boolean DBisExist = false;
 
-//    private static Properties props;
     private ViewServlet viewServlet;
 
 
@@ -120,9 +119,11 @@ public class DbCreater {
             System.out.println("First test link inserted successfully...");
             DBisExist = true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            if(1007 == 1007){
+            if(e.getErrorCode() == 1007){
                 DBisExist = true;
+                System.out.println("База уже существует");
+            }else{
+                e.printStackTrace();
             }
         } finally {
             if (conn!= null) {

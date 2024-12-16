@@ -1,6 +1,7 @@
 package View;
 
 import DAOLayer.DbCreater;
+import DAOLayer.ModelManager;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,16 +18,24 @@ public class ViewServlet extends HttpServlet {
         DbCreater dbCreater = DbCreater.getInstance(this);
         dbCreater.createDB();
 
-        if(dbCreater.isDBisExist()){
+        ModelManager modelManager = ModelManager.getInstance();
+
+        if(dbCreater.isDBisExist() && modelManager.isLogin(request)){
             response.setContentType("text/html; charset=UTF-8");
-            String helloPage = "/WEB-INF/jsp/view.jsp";
+            String helloPage = "/WEB-INF/jsp/viewAuth.jsp";
             RequestDispatcher dispatcher = request.getRequestDispatcher(helloPage);
             dispatcher.include(request, response);
-        }else{
+            return;
+        }else if(dbCreater.isDBisExist() && !modelManager.isLogin(request)){
             response.setContentType("text/html; charset=UTF-8");
-            String helloPage = "/WEB-INF/jsp/viewError.jsp";
+            String helloPage = "/WEB-INF/jsp/viewNotAuth.jsp";
             RequestDispatcher dispatcher = request.getRequestDispatcher(helloPage);
             dispatcher.include(request, response);
+            return;
         }
+        response.setContentType("text/html; charset=UTF-8");
+        String helloPage = "/WEB-INF/jsp/viewError.jsp";
+        RequestDispatcher dispatcher = request.getRequestDispatcher(helloPage);
+        dispatcher.include(request, response);
     }
 }

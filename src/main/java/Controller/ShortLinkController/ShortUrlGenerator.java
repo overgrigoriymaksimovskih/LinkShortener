@@ -1,4 +1,4 @@
-package DAOLayer;
+package Controller.ShortLinkController;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
