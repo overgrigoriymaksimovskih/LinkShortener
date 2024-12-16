@@ -1,7 +1,6 @@
 package DAOLayer.Entity;
 
 import jakarta.persistence.*;
-
 import java.sql.Timestamp;
 
 @Entity

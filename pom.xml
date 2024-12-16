@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.example</groupId>
-  <artifactId>step10</artifactId>
+  <artifactId>LinkShortener</artifactId>
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>step10 Maven Webapp</name>
+  <name>LinkShortener Maven Webapp</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -101,7 +101,7 @@
 
 
   <build>
-    <finalName>step10</finalName>
+    <finalName>LinkShortener</finalName>
 
     <plugins>
 

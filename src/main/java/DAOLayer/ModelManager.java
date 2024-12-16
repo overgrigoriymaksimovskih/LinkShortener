@@ -6,20 +6,27 @@ import Controller.ListLinksController.ControllerListServlet;
 import Controller.LoginController.ControllerLoginServlet;
 import Controller.RegisterController.ControllerRegisterServlet;
 import Controller.ShortLinkController.ShortUrlGenerator;
+
 import DAOLayer.Entity.Url;
 import DAOLayer.Entity.User;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.NoResultException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 

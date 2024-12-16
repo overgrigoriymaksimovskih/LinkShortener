@@ -1,8 +1,13 @@
 package Controller.LinkController;
 
+import org.apache.commons.validator.routines.UrlValidator;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

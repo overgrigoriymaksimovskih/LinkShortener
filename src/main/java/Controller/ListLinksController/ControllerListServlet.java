@@ -1,5 +1,6 @@
 package Controller.ListLinksController;
 
+import Controller.Observer;
 import DAOLayer.ModelManager;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +10,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import java.io.IOException;
+
 import java.io.PrintWriter;
 
 @WebServlet(value = {"/home/controller/list"})

@@ -38,6 +38,7 @@
 
         <!-- Маппинг классов Java к таблицам в базе данных -->
         <mapping class="DAOLayer.Entity.Url"/>
+        <mapping class="DAOLayer.Entity.User"/>
 
     </session-factory>
 
