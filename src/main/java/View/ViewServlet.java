@@ -16,7 +16,7 @@ public class ViewServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         DbCreater dbCreater = DbCreater.getInstance(this);
-        dbCreater.createDB();
+        dbCreater.setUpDB();
 
         ModelManager modelManager = ModelManager.getInstance();
 

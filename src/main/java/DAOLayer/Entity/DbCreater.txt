@@ -14,6 +14,10 @@ public class DbCreater implements DatabaseCreator {
     private static boolean DBisExist = false;
     private static ViewServlet viewServlet;
 
+    public static String getDbName() {
+        return dbName;
+    }
+
     //------------------------------------------------------------------
     private static String dbName;
     private static String dbUrl;
@@ -21,6 +25,7 @@ public class DbCreater implements DatabaseCreator {
     private static String dbPassword;
     private static String table1Name;
     private static String table2Name;
+
     //------------------------------------------------------------------
 
     private static Connection conn = null;

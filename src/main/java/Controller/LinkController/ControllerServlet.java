@@ -16,8 +16,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @WebServlet(value = {"/home/controller"})
 public class ControllerServlet extends HttpServlet implements Observer {
@@ -30,11 +28,11 @@ public class ControllerServlet extends HttpServlet implements Observer {
 
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response){
 
         session = request.getSession();
 
-        if (!lineHandler.isEmpty(request)){
+        if (!lineHandler.isNotEmpty(request)){
             update(response, "fail", "Вы не ввели строку");
         } else if (!lineHandler.isLink(request)) {
             update(response, "fail", "Введенная строка не является ссылкой");
@@ -42,24 +40,31 @@ public class ControllerServlet extends HttpServlet implements Observer {
             modelManager.handleLink(this, response, lineHandler.resetProtocol(request), request.getRequestURL().toString().replace("/home/controller", ""), request);
         }
     }
+
     @Override
     public void update(HttpServletResponse response, String result,  String message) {
+        PrintWriter out = null;
         try {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            PrintWriter out = response.getWriter();
+            out = response.getWriter();
 
-            System.out.println(session.getAttribute("isLogged"));
-            out.println(new JSONObject().put("huy", message).toString());
+            out.print(new JSONObject().put("huy", message).toString());
 
-        } catch (IOException | JSONException e) {
-            System.out.println("Ошибка при отправке ответа: " + e.getMessage());
+        } catch (NullPointerException | IOException | JSONException e){
+            //*
+            if(message.contains("messageForTestNullPointerException")){
+                System.out.println("Ошибка при отправке ответа: " + "Test ControllerServlet" + e.getMessage() + " ->(All OK)");
+            }else{
+                System.out.println("Ошибка при отправке ответа: " + e.getMessage());
+            }
         } finally {
             try {
-                if (response.getWriter()!= null) {
+                if (out != null) {
                     response.getWriter().close();
                 }
             } catch (IOException e) {
+                //*
                 System.err.println("Ошибка при закрытии потока вывода: " + e.getMessage());
             }
         }

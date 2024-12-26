@@ -1,6 +1,6 @@
 package DAOLayer;
 
-import Controller.DeleteController.ControllerDeleteServlet;
+import Controller.DeleteController.ControllerDeleteAccServlet;
 import Controller.LinkController.ControllerServlet;
 import Controller.ListLinksController.ControllerListServlet;
 import Controller.LoginController.ControllerLoginServlet;
@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.NoResultException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,11 +21,8 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -50,7 +46,7 @@ public class ModelManager {
         return instance;
     }
 
-    public void handleLink(ControllerServlet controllerServlet, HttpServletResponse response, String link, String host, HttpServletRequest request) throws IOException {
+    public void handleLink(ControllerServlet controllerServlet, HttpServletResponse response, String link, String host, HttpServletRequest request) {
 
         System.out.println("dffsd " + link);
         HttpSession session = request.getSession();
@@ -116,7 +112,7 @@ public class ModelManager {
         }
     }
 
-    public void handleLogin(ControllerLoginServlet loginControllerServlet, HttpServletResponse response, HttpServletRequest request) throws IOException {
+    public void handleLogin(ControllerLoginServlet loginControllerServlet, HttpServletResponse response, HttpServletRequest request) {
         HttpSession session = request.getSession();
         if (session.getAttribute("isLogged")!= null && (Boolean) session.getAttribute("isLogged")) {
             loginControllerServlet.update(response, "fail", "Вы уже авторизованы");
@@ -153,14 +149,14 @@ public class ModelManager {
         }
     }
 
-    public void handleLogout(ControllerLoginServlet loginControllerServlet, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void handleLogout(ControllerLoginServlet loginControllerServlet, HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         session.removeAttribute("isLogged");
         session.removeAttribute("userId");
         loginControllerServlet.update(response, "success", "Выход выполнен успешно");
     }
 
-    public void handleRegister(ControllerRegisterServlet registerControllerServlet, HttpServletResponse response, HttpServletRequest request) throws IOException {
+    public void handleRegister(ControllerRegisterServlet registerControllerServlet, HttpServletResponse response, HttpServletRequest request) {
         HttpSession session = request.getSession();
         if (session.getAttribute("isLogged")!= null && (Boolean) session.getAttribute("isLogged")) {
             registerControllerServlet.update(response, "fail", "Вы уже авторизованы");
@@ -221,7 +217,7 @@ public class ModelManager {
         }
     }
 
-    public void handleDelete(ControllerDeleteServlet controllerServlet, HttpServletResponse response, HttpServletRequest request) throws IOException {
+    public void handleDelete(ControllerDeleteAccServlet controllerServlet, HttpServletResponse response, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Boolean isLogin = (Boolean) session.getAttribute("isLogged");
         Long userId = (Long) session.getAttribute("userId");
@@ -264,7 +260,7 @@ public class ModelManager {
         }
     }
 
-    public void handleListLinks(ControllerListServlet listControllerServlet, HttpServletResponse response, HttpServletRequest request, String host) throws IOException {
+    public void handleListLinks(ControllerListServlet listControllerServlet, HttpServletResponse response, HttpServletRequest request, String host) {
         HttpSession session = request.getSession();
         Boolean isLogin = (Boolean) session.getAttribute("isLogged");
         Long userId = (Long) session.getAttribute("userId");
@@ -356,7 +352,7 @@ public class ModelManager {
         }
     }
 
-    public boolean isLogin(HttpServletRequest request) throws IOException {
+    public boolean isLogin(HttpServletRequest request) {
         HttpSession session = request.getSession();
         if (session.getAttribute("isLogged")!= null && (Boolean) session.getAttribute("isLogged")) {
             return true;

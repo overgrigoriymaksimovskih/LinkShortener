@@ -1,13 +1,8 @@
 package Controller.LinkController;
 
-import org.apache.commons.validator.routines.UrlValidator;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,7 +65,7 @@ public class LineHandler {
     }
 
 
-    public boolean isEmpty(HttpServletRequest request) {
+    public boolean isNotEmpty(HttpServletRequest request) {
         String someParam = request.getParameter("value");
         if (someParam == null || someParam.isEmpty()) {
 
