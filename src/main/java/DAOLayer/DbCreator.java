@@ -1,6 +1,6 @@
 package DAOLayer;
 
-import View.ViewServlet;
+import org.mockito.MockedStatic;
 
 import javax.servlet.ServletContext;
 import java.io.FileInputStream;
@@ -8,41 +8,36 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 
-public class DbCreater implements DatabaseCreator {
+import static org.mockito.Mockito.*;
 
-    private static DbCreater instance;
-    private static boolean DBisExist = false;
-    private static ViewServlet viewServlet;
-
+public class DbCreator {
     //------------------------------------------------------------------
-    private static String dbName;
-    private static String dbUrl;
-    private static String dbUser;
-    private static String dbPassword;
-    private static String table1Name;
-    private static String table2Name;
-    //------------------------------------------------------------------
-
-    private static Connection conn = null;
-    private static Statement stmt = null;
-
-
-    private DbCreater(ViewServlet viewServlet) {
-        this.viewServlet = viewServlet;
+    private String dbName;
+    private String dbUrl;
+    private String dbUser;
+    private String dbPassword;
+    private String table1Name;
+    private String table2Name;
+    private Connection conn = null;
+    private Statement stmt = null;
+    private boolean isDbCreated = false;
+    public boolean getDbCreated(){
+        return isDbCreated;
     }
-    public static DbCreater getInstance(ViewServlet viewServlet) {
-        if (instance == null) {
-            instance = new DbCreater(viewServlet);
-        }
-        return instance;
+
+    public DbCreator() {
+
     }
+    public DbCreator(ServletContext servletContext) {
+        setProps(servletContext);
+    }
+
     //------------------------------------------------------------------------------------------------------------------
-    public void setUpDB(){
-        if (DBisExist) {
-            return;
+    public boolean setUpDB() {
+        if(isDbCreated){
+            return true;
         }
         try {
-            setProps();
             loadJDBCDriver();
             openConnectionToDB();
             createStatementForDB();
@@ -54,37 +49,36 @@ public class DbCreater implements DatabaseCreator {
             createTableLinks();
             createTestRowInUsersTable();
             createTestRowInLinksTable();
-            DBisExist = true;
+            isDbCreated = true;
+            return true;
         } catch (SQLException e) {
-            if(e.getErrorCode() == 1007){
-                DBisExist = true;
+            if (e.getErrorCode() == 1007) {
                 System.out.println("База уже существует");
-            }else{
+                isDbCreated = true;
+                return true;
+            } else {
                 e.printStackTrace();
+                return false;
             }
         } finally {
             closeConnection();
         }
     }
     //------------------------------------------------------------------------------------------------------------------
-    private void setProps(){
+    private void setProps(ServletContext servletContext) {
         Properties props = new Properties();
-        ServletContext servletContext = viewServlet.getServletContext();
         String realPath = servletContext.getRealPath("/WEB-INF/props/database.properties");
         try (FileInputStream fis = new FileInputStream(realPath)) {
             props.load(fis);
-        } catch (IOException e) {
-            //*
-            System.out.println("Ошибка при загрузке свойств: " + e.getMessage());
-            return;
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при загрузке настроек из файла: /WEB-INF/props/database.properties", e);
         }
-
-        dbName = props.getProperty("db.name");
-        dbUrl = props.getProperty("db.url");
-        dbUser = props.getProperty("db.user");
-        dbPassword = props.getProperty("db.password");
-        table1Name = props.getProperty("table1.name");
-        table2Name = props.getProperty("table2.name");
+        this.dbName = props.getProperty("db.name");
+        this.dbUrl = props.getProperty("db.url");
+        this.dbUser = props.getProperty("db.user");
+        this.dbPassword = props.getProperty("db.password");
+        this.table1Name = props.getProperty("table1.name");
+        this.table2Name = props.getProperty("table2.name");
     }
 
     private void loadJDBCDriver(){
@@ -95,15 +89,11 @@ public class DbCreater implements DatabaseCreator {
         }
     }
 
-    private void openConnectionToDB(){
+    private void openConnectionToDB() throws SQLException {
         // Open a connection
-        try {
-            conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
-//conn close tut
+
     private void openConnectionToSchema() throws SQLException {
         // Подключение к базе данных
         String url = dbUrl + dbName;
@@ -130,7 +120,7 @@ public class DbCreater implements DatabaseCreator {
         String sql = "CREATE DATABASE " + dbName + " CHARACTER SET utf8 COLLATE utf8_general_ci";
         stmt.executeUpdate(sql);
         //*
-        System.out.println("Database created successfully...");
+        System.out.println("Database " + dbName + " created successfully...");
     }
 
     private void createTableUsers() throws SQLException {
@@ -141,7 +131,7 @@ public class DbCreater implements DatabaseCreator {
                 "password VARCHAR(100) NOT NULL, " +
                 "PRIMARY KEY (id)) CHARACTER SET utf8 COLLATE utf8_general_ci";
         stmt.executeUpdate(createUserTableQuery);
-        System.out.println("Table users created successfully...");
+        System.out.println("Table " + table1Name + " created successfully... ");
     }
 
     private void createTableLinks() throws SQLException {
@@ -155,7 +145,7 @@ public class DbCreater implements DatabaseCreator {
                 "PRIMARY KEY (id), " +
                 "FOREIGN KEY (user_id) REFERENCES "+ table1Name +"(id)) CHARACTER SET utf8 COLLATE utf8_general_ci";
         stmt.executeUpdate(createLinkTableQuery);
-        System.out.println("Table links created successfully...");
+        System.out.println("Table " + table2Name + " created successfully...");
     }
 
     private void createTestRowInUsersTable() throws SQLException {
@@ -191,7 +181,4 @@ public class DbCreater implements DatabaseCreator {
         }
     }
 
-    public boolean isDBisExist(){
-        return DBisExist;
-    }
 }
