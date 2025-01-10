@@ -38,6 +38,7 @@ public class DbCreator {
             return true;
         }
         try {
+            methodForTestSQLException();
             loadJDBCDriver();
             openConnectionToDB();
             createStatementForDB();
@@ -53,7 +54,7 @@ public class DbCreator {
             return true;
         } catch (SQLException e) {
             if (e.getErrorCode() == 1007) {
-                System.out.println("База уже существует");
+                System.out.println(e.getMessage());
                 isDbCreated = true;
                 return true;
             } else {
@@ -179,6 +180,12 @@ public class DbCreator {
                 e.printStackTrace();
             }
         }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // метод только для тестов, абсолютно не функционален
+    void methodForTestSQLException() throws SQLException {
+
     }
 
 }

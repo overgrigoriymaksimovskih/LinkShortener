@@ -46,9 +46,9 @@ public class ModelManager {
         return instance;
     }
 
-    public void handleLink(ControllerServlet controllerServlet, HttpServletResponse response, String link, String host, HttpServletRequest request) {
+    public synchronized void handleLink(ControllerServlet controllerServlet, HttpServletResponse response, String link, String host, HttpServletRequest request) {
 
-        System.out.println("dffsd " + link);
+//        System.out.println("dffsd " + link);
         HttpSession session = request.getSession();
         Long userId = (Long) session.getAttribute("userId");
 
@@ -156,7 +156,7 @@ public class ModelManager {
         loginControllerServlet.update(response, "success", "Выход выполнен успешно");
     }
 
-    public void handleRegister(ControllerRegisterServlet registerControllerServlet, HttpServletResponse response, HttpServletRequest request) {
+    public synchronized void handleRegister(ControllerRegisterServlet registerControllerServlet, HttpServletResponse response, HttpServletRequest request) {
         HttpSession session = request.getSession();
         if (session.getAttribute("isLogged")!= null && (Boolean) session.getAttribute("isLogged")) {
             registerControllerServlet.update(response, "fail", "Вы уже авторизованы");

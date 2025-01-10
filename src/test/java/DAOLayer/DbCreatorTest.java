@@ -14,10 +14,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -38,13 +35,17 @@ public class DbCreatorTest {
         field.setAccessible(true);
         return field.get(target);
     }
-    public void setStringField(Object target, String fieldName, String value)
-            throws NoSuchFieldException, IllegalAccessException {
+    public void setStringField(Object target, String fieldName, String value) throws NoSuchFieldException, IllegalAccessException {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, value);
     }
     private void setObjectField(Object target, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+    public void setBooleanField(Object target, String fieldName, boolean value) throws NoSuchFieldException, IllegalAccessException {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, value);
@@ -157,7 +158,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void openConnectionToDBSuccessful() throws Exception {
+    void testOpenConnectionToDBSuccessful() throws Exception {
         setStringField(dbCreator, "dbUrl", "a");
         setStringField(dbCreator, "dbUser", "b");
         setStringField(dbCreator, "dbPassword", "c");
@@ -185,7 +186,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void openConnectionToSchemaSuccessful() throws Exception {
+    void testOpenConnectionToSchemaSuccessfu() throws Exception {
         setStringField(dbCreator, "dbName", "a");
         setStringField(dbCreator, "dbUrl", "a");
         setStringField(dbCreator, "dbUser", "b");
@@ -214,7 +215,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void createStatementForDBSuccessful() throws Exception {
+    void testCreateStatementForDBSuccessful() throws Exception {
         // 1. Настраиваем моки
         Connection mockedConnection = Mockito.mock(Connection.class);
         Statement mockedStatement = Mockito.mock(Statement.class);
@@ -237,7 +238,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void createStatementForSchemaSuccessful() throws Exception {
+    void testCreateStatementForSchemaSuccessful() throws Exception {
         // 1. Настраиваем моки
         Statement mockedStatement = Mockito.mock(Statement.class);
         // 2. Устанавливаем значение поля
@@ -253,7 +254,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void createDBSuccessful() throws Exception {
+    void testCreateDBSuccessful() throws Exception {
 
         String dbName = "TESTDATABASE";
 
@@ -279,7 +280,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void createTableUsersSuccessful() throws Exception {
+    void testCreateTableUsersSuccessful() throws Exception {
         String table1Name = "TESTUSERSTABLE";
         // 1. Мокируем Statement
         Statement mockedStatement = Mockito.mock(Statement.class);
@@ -311,7 +312,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void createTableLinksSuccessful() throws Exception {
+    void testCreateTableLinksSuccessful() throws Exception {
 
         String table1Name = "users";
         String table2Name = "TESTLINKSTABLE";
@@ -349,7 +350,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void createTestRowInUsersTableSuccessful() throws Exception {
+    void testCreateTestRowInUsersTableSuccessful() throws Exception {
 
         String table1Name = "users";
 
@@ -377,7 +378,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void createTestRowInLinksTableSuccessful() throws Exception {
+    void testCreateTestRowInLinksTableSuccessful() throws Exception {
         String table1Name = "users";
         String table2Name = "links";
         int userId = 1;
@@ -413,7 +414,7 @@ public class DbCreatorTest {
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
-    void closeConnection_Successful() throws Exception {
+    void testCloseConnection_Successful() throws Exception {
         // 1. Мокируем Connection
         Connection mockedConnection = Mockito.mock(Connection.class);
 
@@ -429,7 +430,7 @@ public class DbCreatorTest {
         verify(mockedConnection).close();
     }
     @Test
-    void closeConnection_WithNullConnection() throws Exception {
+    void testCloseConnection_WithNullConnection() throws Exception {
         // 1. Убеждаемся, что conn null
         setObjectField(dbCreator, "conn", null);
 
@@ -441,5 +442,107 @@ public class DbCreatorTest {
         // 3. Проверяем, что метод close() не был вызван
         verifyNoInteractions(mock(Connection.class)); // Важный момент
     }
+    //------------------------------------------------------------------------------------------------------------------
+    @Test
+    void testSetupAlreadyExistDB() throws Exception{
+        // Устанавливаем значение isDbCreated
+        setBooleanField(dbCreator, "isDbCreated", true);
+        // 2. Вызываем метод setUpDB()
+        Method setUpDBMethod = DbCreator.class.getDeclaredMethod("setUpDB");
+        setUpDBMethod.setAccessible(true);
+        boolean result = (boolean) setUpDBMethod.invoke(dbCreator);
+        // 3. Проверяем результат
+        assertTrue(result, "Метод setUpDB должен вернуть true, когда isDbCreated = true");
+    }
+//    @Test
+//    void testSetupDB_SQLException_ErrorCode1007() throws Exception {
+//        // 1. Мокируем SQLException с кодом 1007
+//        SQLException mockedException = new SQLException("Database already exists", null, 1007);
+//
+//        // 2. Создаем шпиона dbCreator
+//        DbCreator spyDbCreator = Mockito.spy(dbCreator);
+//
+//        // 3. Мокируем DriverManager.getConnection() с помощью MockedStatic
+//        try (MockedStatic<DriverManager> mockedDriverManager = mockStatic(DriverManager.class)) {
+//            when(DriverManager.getConnection(anyString(), anyString(), anyString())).thenThrow(mockedException);
+//        }
+//        //4. Мокируем метод, чтобы  не выполнилась реальная попытка подключения к БД
+//
+//        // 1. Получаем доступ к приватному методу
+//        Method loadJDBCDriverMethod = DbCreator.class.getDeclaredMethod("loadJDBCDriver");
+//        loadJDBCDriverMethod.setAccessible(true);
+//
+////        doNothing().when(spyDbCreator).loadJDBCDriver();
+//
+//        // 5. Вызываем setUpDB()
+//        Method setUpDBMethod = DbCreator.class.getDeclaredMethod("setUpDB");
+//        setUpDBMethod.setAccessible(true);
+//        boolean result = (boolean) setUpDBMethod.invoke(spyDbCreator);
+//
+//        // 6. Проверяем результат
+//        assertTrue(result, "Метод setUpDB должен вернуть true, когда SQLException с кодом 1007");
+//        assertTrue(getField(spyDbCreator, "isDbCreated") instanceof Boolean);
+//        assertTrue(getField(spyDbCreator, "isDbCreated").equals(true));
+//    }
+
+    @Test
+    public void testDatabaseAlreadyExists() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        // 1. Создаем объект DbCreator
+        DbCreator dbCreator = new DbCreator();
+
+        // 2. Создаем spy-объект
+        DbCreator spyDbCreator = spy(dbCreator);
+
+        // 3. Получаем приватное поле isDbCreated через рефлексию
+        Field isDbCreatedField = DbCreator.class.getDeclaredField("isDbCreated");
+        isDbCreatedField.setAccessible(true); // Делаем поле доступным
+
+        // 4. Устанавливаем значение isDbCreated в false
+        isDbCreatedField.set(spyDbCreator, false);
+
+
+        // 5. Создаем SQLException, которую мы будем бросать
+        SQLException sqlException = new SQLException("Тестовая проверка обработки исключения errorCode = 1007", "00000", 1007);
+
+        // 6. Мокируем приватный метод methodForTestSQLException(), чтобы он выбрасывал SQLException
+        doThrow(sqlException).when(spyDbCreator).methodForTestSQLException();
+
+
+        // 7. Вызываем setUpDB() и проверяем результат
+        assertTrue(spyDbCreator.setUpDB());
+        assertTrue(spyDbCreator.getDbCreated()); // Проверяем, что isDbCreated установлен в true
+    }
+
+    @Test
+    public void testDatabaseCriticalError() throws SQLException, NoSuchFieldException, IllegalAccessException {
+        // 1. Создаем объект DbCreator
+        DbCreator dbCreator = new DbCreator();
+
+        // 2. Создаем spy-объект
+        DbCreator spyDbCreator = spy(dbCreator);
+
+        // 3. Получаем приватное поле isDbCreated через рефлексию
+        Field isDbCreatedField = DbCreator.class.getDeclaredField("isDbCreated");
+        isDbCreatedField.setAccessible(true); // Делаем поле доступным
+
+        // 4. Устанавливаем значение isDbCreated в false
+        isDbCreatedField.set(spyDbCreator, false);
+
+
+        // 5. Создаем SQLException, которую мы будем бросать
+        SQLException sqlException = new SQLException("Тестовая проверка обработки исключения errorCode != 1007", "00000", 1002);
+
+        // 6. Мокируем приватный метод methodForTestSQLException(), чтобы он выбрасывал SQLException
+        doThrow(sqlException).when(spyDbCreator).methodForTestSQLException();
+
+
+        // 7. Вызываем setUpDB() и проверяем результат
+        assertFalse(spyDbCreator.setUpDB());
+        assertFalse(spyDbCreator.getDbCreated()); // Проверяем, что isDbCreated установлен в true
+    }
+
+
+
+
 
 }
