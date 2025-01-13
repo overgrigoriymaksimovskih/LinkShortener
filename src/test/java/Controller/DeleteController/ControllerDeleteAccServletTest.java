@@ -73,7 +73,7 @@ class ControllerDeleteAccServletTest {
     }
 
     @Test
-//проверяем ошибку IOException при отправке ответа response.getWriter()
+//проверяем ошибку IOException при отправке ответа response.getWriter()*******************
     void testUpdateIOExceptionGetWriter() {
         //Настраиваем мок response, чтобы метод getWriter() выкинул IOException
         try {
@@ -103,7 +103,7 @@ class ControllerDeleteAccServletTest {
         //Вызываем метод update сервлета и проверяем что не будет брошено исключение
         // так как мы генерируем ошибку то должно быть напечатано сообщение с "Ошибка при отправке ответа: Test IOException"
         try {
-            servlet.update(response, "error", "messageForTestNullPointerException");
+            servlet.update(response, "error", "Test exception occurred");
         } catch (Throwable e) {
             org.junit.jupiter.api.Assertions.fail("Это исключение не должно было быть выброшено: " + e.getMessage());
         }

@@ -118,7 +118,7 @@ public class ControllerListServletTest {
         //Вызываем метод update сервлета и проверяем что не будет брошено исключение
         // так как мы генерируем ошибку то должно быть напечатано сообщение с "Ошибка при отправке ответа: Test IOException"
         try {
-            servlet.update(response, "error", "TmessageForTestNullPointerException", 1, 1);
+            servlet.update(response, "error", "Test exception occurred", 1, 1);
         } catch (Throwable e) {
             org.junit.jupiter.api.Assertions.fail("Это исключение не должно было быть выброшено: " + e.getMessage());
         }

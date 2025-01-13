@@ -88,25 +88,12 @@ public class DbCreatorTest {
     @Test
     void testSetPropsFailure() throws Exception {
         servletContextMock = Mockito.mock(ServletContext.class);
-        databasePropertiesPath = "DAOLayer/props/test_database.properties";
-
-        // Получаем полный путь к файлу (URL)
-        URL resourceUrl = getClass().getClassLoader().getResource(databasePropertiesPath);
-        if(resourceUrl == null){
-            throw new NullPointerException("файл properties для теста не найден");
-        }
-        // Декодирование URL
-        String decodedPath = URLDecoder.decode(resourceUrl.getFile(), StandardCharsets.UTF_8.name());
-        File resourceFile = new File(decodedPath);
-        realPath = resourceFile.getAbsolutePath();
-
         // 1. Настраиваем мок ServletContext для имитации ошибки загрузки файла.
         when(servletContextMock.getResourceAsStream(databasePropertiesPath)).thenReturn(null);
 
         // 2. Получаем доступ к приватному методу
         Method setPropsMethod = DbCreator.class.getDeclaredMethod("setProps", ServletContext.class);
         setPropsMethod.setAccessible(true);
-
 
         // 3. Проверяем что метод выбрасывает правильное исключение
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -124,7 +111,7 @@ public class DbCreatorTest {
             }
         });
         // 4. Проверяем сообщение исключения
-        assertTrue(exception.getMessage().contains("Ошибка при загрузке настроек из файла: /WEB-INF/props/database.properties"));
+        assertTrue(exception.getMessage().contains("Тестовая ошибка при загрузке настроек из файла: /WEB-INF/props/database.properties"));
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
