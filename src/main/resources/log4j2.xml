@@ -5,7 +5,20 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
 
-        <RollingFile name="LogDebug" fileName="Logs/debug.log" filePattern="Logs/debug-%i.log">
+        <RollingFile name="LogTrace" fileName="D:\projects\0000\My Tests On GitHUB\MyTestsOnGitHUB\src\LinkShortener\Logs\trace.log" filePattern="Logs/trace-%i.log">
+            <Filters>
+                <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="15 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+
+        <RollingFile name="LogDebug" fileName="D:\projects\0000\My Tests On GitHUB\MyTestsOnGitHUB\src\LinkShortener\Logs\debug.log" filePattern="Logs/debug-%i.log">
             <Filters>
                 <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
@@ -17,7 +30,7 @@
             </Policies>
             <DefaultRolloverStrategy max="5"/>
         </RollingFile>
-        <RollingFile name="LogInfo" fileName="Logs/info.log" filePattern="Logs/info-%i.log">
+        <RollingFile name="LogInfo" fileName="D:\projects\0000\My Tests On GitHUB\MyTestsOnGitHUB\src\LinkShortener\Logs\info.log" filePattern="Logs/info-%i.log">
             <Filters>
                 <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
@@ -37,6 +50,34 @@
         <Logger name="DAOLayer.DbCreator" level="trace" additivity="false">
             <AppenderRef ref="LogDebug"/>
             <AppenderRef ref="LogInfo"/>
+        </Logger>
+        <Logger name="DAOLayer.HibernateUtil" level="trace" additivity="false">
+            <AppenderRef ref="LogDebug"/>
+            <AppenderRef ref="LogInfo"/>
+        </Logger>
+        <Logger name="Controller.DeleteController.ControllerDeleteAccServlet" level="trace" additivity="false">
+            <AppenderRef ref="LogDebug"/>
+            <AppenderRef ref="LogInfo"/>
+        </Logger>
+        <Logger name="Controller.LinkController.ControllerServlet" level="trace" additivity="false">
+            <AppenderRef ref="LogDebug"/>
+            <AppenderRef ref="LogInfo"/>
+        </Logger>
+        <Logger name="Controller.ListLinksController.ControllerListServlet" level="trace" additivity="false">
+            <AppenderRef ref="LogDebug"/>
+            <AppenderRef ref="LogInfo"/>
+        </Logger>
+        <Logger name="Controller.LoginController.ControllerLoginServlet" level="trace" additivity="false">
+            <AppenderRef ref="LogDebug"/>
+            <AppenderRef ref="LogInfo"/>
+        </Logger>
+        <Logger name="Controller.RegisterController.ControllerRegisterServlet" level="trace" additivity="false">
+            <AppenderRef ref="LogDebug"/>
+            <AppenderRef ref="LogInfo"/>
+        </Logger>
+
+        <Logger name="DAOLayer.ModelManager" level="trace" additivity="false">
+            <AppenderRef ref="LogTrace"/>
         </Logger>
 
         <Root level="error">

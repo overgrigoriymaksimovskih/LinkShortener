@@ -1,10 +1,9 @@
 package DAOLayer;
 
-import org.mockito.MockedStatic;
-
 import javax.servlet.ServletContext;
 import java.io.FileInputStream;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.slf4j.*;
@@ -28,6 +27,15 @@ public class DbCreator {
     public DbCreator() {
 
     }
+    //------------------------------------------------------------------------------------------------------------------
+    // это конечно, полный бред, но ниже мы будем смотреть есть ли в стеке вызова тестовый метод, чтобы определить
+    // тестовая это ошибка или реальная... (((
+    public static boolean isMethodCalledFromTest() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        return Arrays.stream(stackTrace)
+                .anyMatch(frame -> frame.getClassName().startsWith("org.junit")); // JUnit
+    }
+    //------------------------------------------------------------------------------------------------------------------
     public DbCreator(ServletContext servletContext) {
         setProps(servletContext);
     }
@@ -55,10 +63,14 @@ public class DbCreator {
         } catch (SQLException e) {
             if (e.getErrorCode() == 1007) {
 //                System.out.println(e.getMessage());
-                log.debug(e.getMessage());
+                if(isMethodCalledFromTest()){
+                    log.debug(e.getMessage());
+                } else {
+                    log.info(e.getMessage());
+                }
                 isDbCreated = true;
                 return true;
-            } else if (e.getMessage().contains("Тестовая")) {
+            } else if (e.getMessage().contains("Testing for checking handling exception errorCode")) {
                 log.debug(e.getMessage());
                 return false;
             } else {
@@ -70,30 +82,37 @@ public class DbCreator {
             closeConnection();
         }
     }
+
     //------------------------------------------------------------------------------------------------------------------
     private void setProps(ServletContext servletContext) {
         Properties props = new Properties();
         String realPath = servletContext.getRealPath("/WEB-INF/props/database.properties");
-        //это конечно, полный бред, но ниже мы будем смотреть есть ли в стеке вызова тестовый метод, чтобы определить
-        // тестовая это ошибка или реальная... (((
+
         try (FileInputStream fis = new FileInputStream(realPath)) {
             props.load(fis);
         } catch (Exception e) {
-            StackTraceElement[] stackTrace = e.getStackTrace();
-            StringBuilder sb = new StringBuilder();
-            for (StackTraceElement element : stackTrace) {
-                sb.append(element);
-            }
-            System.out.println(e.getMessage());
-            if(sb.toString().contains("testSetPropsFailure")){
-                RuntimeException runtimeException = new RuntimeException("Тестовая ошибка при загрузке настроек из файла: /WEB-INF/props/database.properties", e);
+//            StackTraceElement[] stackTrace = e.getStackTrace();
+//            StringBuilder sb = new StringBuilder();
+//            for (StackTraceElement element : stackTrace) {
+//                sb.append(element);
+//            }
+//            RuntimeException runtimeException;
+//            if(sb.toString().contains("testSetPropsFailure")){
+//                runtimeException = new RuntimeException("Tested error with load settings from file: /WEB-INF/props/database.properties", e);
+//                log.debug(runtimeException.getMessage());
+//            }else{
+//                runtimeException = new RuntimeException("Error with load settings from file: /WEB-INF/props/database.properties", e);
+//                log.warn(runtimeException.getMessage());
+//            }
+            RuntimeException runtimeException;
+            if(isMethodCalledFromTest()){
+                runtimeException = new RuntimeException("Tested error with load settings from file: /WEB-INF/props/database.properties", e);
                 log.debug(runtimeException.getMessage());
-                throw runtimeException;
-            }else{
-                RuntimeException runtimeException = new RuntimeException("Ошибка при загрузке настроек из файла: /WEB-INF/props/database.properties", e);
+            } else {
+                runtimeException = new RuntimeException("Error with load settings from file: /WEB-INF/props/database.properties", e);
                 log.warn(runtimeException.getMessage());
-                throw runtimeException;
             }
+            throw runtimeException;
         }
         this.dbName = props.getProperty("db.name");
         this.dbUrl = props.getProperty("db.url");
@@ -142,7 +161,12 @@ public class DbCreator {
         String sql = "CREATE DATABASE " + dbName + " CHARACTER SET utf8 COLLATE utf8_general_ci";
         stmt.executeUpdate(sql);
         //*
-        log.debug("Database " + dbName + " created successfully...");
+        if(isMethodCalledFromTest()){
+            log.debug("Database " + dbName + " created successfully...");
+        } else {
+            log.info("Database " + dbName + " created successfully...");
+        }
+
     }
 
     private void createTableUsers() throws SQLException {
@@ -154,7 +178,12 @@ public class DbCreator {
                 "PRIMARY KEY (id)) CHARACTER SET utf8 COLLATE utf8_general_ci";
         stmt.executeUpdate(createUserTableQuery);
 //        System.out.println("Table " + table1Name + " created successfully... ");
-        log.debug("Table " + table1Name + " created successfully... ");
+        if(isMethodCalledFromTest()){
+            log.debug("Table " + table1Name + " created successfully... ");
+        } else {
+            log.info("Table " + table1Name + " created successfully... ");
+        }
+
     }
 
     private void createTableLinks() throws SQLException {
@@ -169,7 +198,12 @@ public class DbCreator {
                 "FOREIGN KEY (user_id) REFERENCES "+ table1Name +"(id)) CHARACTER SET utf8 COLLATE utf8_general_ci";
         stmt.executeUpdate(createLinkTableQuery);
 //        System.out.println("Table " + table2Name + " created successfully...");
-        log.debug("Table" + table2Name + " created successfully...");
+        if(isMethodCalledFromTest()){
+            log.debug("Table " + table2Name + " created successfully...");
+        } else {
+            log.info("Table " + table2Name + " created successfully...");
+        }
+
     }
 
     private void createTestRowInUsersTable() throws SQLException {
@@ -177,7 +211,12 @@ public class DbCreator {
         String insertUserQuery = "INSERT INTO " + table1Name + " (login, password) VALUES ('test', 'password')";
         stmt.executeUpdate(insertUserQuery);
 //        System.out.println("First test user inserted successfully...");
-        log.debug("\"First test user inserted successfully...\"");
+        if(isMethodCalledFromTest()){
+            log.debug("First test user inserted successfully...");
+        } else {
+            log.info("First test user inserted successfully...");
+        }
+
     }
 
     private void createTestRowInLinksTable() throws SQLException {
@@ -194,7 +233,12 @@ public class DbCreator {
         String insertLinkQuery = "INSERT INTO " + table2Name +  "(original_url, short_url, user_id) VALUES ('https://www.example.com', 'example', " + userId + ")";
         stmt.executeUpdate(insertLinkQuery);
 //        System.out.println("First test link inserted successfully...");
-        log.debug("First test link inserted successfully...");
+        if(isMethodCalledFromTest()){
+            log.debug("First test link inserted successfully...");
+        } else {
+            log.info("First test link inserted successfully...");
+        }
+
     }
 
     private void closeConnection(){

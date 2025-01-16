@@ -7,6 +7,8 @@ import org.mockito.Mockito;
 
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -111,7 +113,7 @@ public class DbCreatorTest {
             }
         });
         // 4. Проверяем сообщение исключения
-        assertTrue(exception.getMessage().contains("Тестовая ошибка при загрузке настроек из файла: /WEB-INF/props/database.properties"));
+        assertTrue(exception.getMessage().contains("Tested error with load settings from file: /WEB-INF/props/database.properties"));
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test
@@ -489,7 +491,7 @@ public class DbCreatorTest {
 
 
         // 5. Создаем SQLException, которую мы будем бросать
-        SQLException sqlException = new SQLException("Тестовая проверка обработки исключения errorCode = 1007", "00000", 1007);
+        SQLException sqlException = new SQLException("Testing for checking handling exception errorCode = 1007", "00000", 1007);
 
         // 6. Мокируем приватный метод methodForTestSQLException(), чтобы он выбрасывал SQLException
         doThrow(sqlException).when(spyDbCreator).methodForTestSQLException();
@@ -517,7 +519,7 @@ public class DbCreatorTest {
 
 
         // 5. Создаем SQLException, которую мы будем бросать
-        SQLException sqlException = new SQLException("Тестовая проверка обработки исключения errorCode != 1007", "00000", 1002);
+        SQLException sqlException = new SQLException("Testing for checking handling exception errorCode errorCode != 1007", "00000", 1002);
 
         // 6. Мокируем приватный метод methodForTestSQLException(), чтобы он выбрасывал SQLException
         doThrow(sqlException).when(spyDbCreator).methodForTestSQLException();

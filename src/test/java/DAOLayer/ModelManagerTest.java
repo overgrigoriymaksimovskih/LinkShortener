@@ -1,6 +1,7 @@
 package DAOLayer;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,6 +9,13 @@ class ModelManagerTest {
     // Когда-нибудь я обязательно напишу тесты для методов этого класса но сначала сделаю рефакторинг
     // всего класса. Избавлюсь от синхронайз методов (особенно метод обработки ссылки не должен блокировать БД если в
     // нее не нужно делать запись) и все обращения к БД в каждом методе сделаю одним запросом.
+
+
+    private ModelManager modelManager = ModelManager.getInstance();
+//    @Test
+//    void testloggerring() {
+//        modelManager.testLoggerring();
+//    }
 
     @Test
     void getInstance() {

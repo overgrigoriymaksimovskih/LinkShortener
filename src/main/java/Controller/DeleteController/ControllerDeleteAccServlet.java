@@ -17,7 +17,7 @@ import org.slf4j.*;
 
 @WebServlet(value = "/home/controller/delete", asyncSupported = true)
 public class ControllerDeleteAccServlet extends HttpServlet implements Observer {
-    private static final Logger log = LoggerFactory.getLogger(DbCreator.class);
+    private static final Logger log = LoggerFactory.getLogger(ControllerDeleteAccServlet.class);
     ModelManager modelManager = ModelManager.getInstance();
 
     @Override
@@ -39,9 +39,9 @@ public class ControllerDeleteAccServlet extends HttpServlet implements Observer 
         } catch (NullPointerException | IOException | JSONException e){
             //*
             if(message.contains("Test exception occurred")){
-                log.debug("Ошибка при отправке ответа: " + "Test ControllerDeleteServlet " + e.getMessage() + " ->(All OK)");
+                log.debug("Error with send answer: " + "Test ControllerDeleteServlet " + e.getMessage() + " ->(All OK)");
             }else{
-                log.warn("Ошибка при отправке ответа: " + e.getMessage());
+                log.warn("Error with send answer: " + e.getMessage());
             }
         } finally {
             try {
@@ -54,9 +54,9 @@ public class ControllerDeleteAccServlet extends HttpServlet implements Observer 
 //                log.warn("Ошибка при закрытии потока вывода: " + e.getMessage());
 
                 if(e.getMessage().contains("All OK")){
-                    log.debug("Ошибка при закрытии потока вывода: " + "Test ControllerDeleteServlet " + e.getMessage() + " ->(All OK)");
+                    log.debug("Error with closing output stream: " + "Test ControllerDeleteServlet " + e.getMessage() + " ->(All OK)");
                 }else{
-                    log.warn("Ошибка при закрытии потока вывода: " + e.getMessage());
+                    log.warn("Error with closing output stream: " + e.getMessage());
                 }
             }
         }

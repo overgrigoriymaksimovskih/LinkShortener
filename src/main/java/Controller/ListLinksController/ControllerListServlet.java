@@ -19,7 +19,7 @@ import org.slf4j.*;
 
 @WebServlet(value = {"/home/controller/list"})
 public class ControllerListServlet extends HttpServlet implements ObserverForList {
-    private static final Logger log = LoggerFactory.getLogger(DbCreator.class);
+    private static final Logger log = LoggerFactory.getLogger(ControllerListServlet.class);
     ModelManager modelManager = ModelManager.getInstance();
 
     @Override
@@ -41,10 +41,10 @@ public class ControllerListServlet extends HttpServlet implements ObserverForLis
             //*
             if(links.contains("Test exception occurred")){
 //                System.out.println("Ошибка при отправке ответа: " + "Test ControllerListServlet" + e.getMessage() + " ->(All OK)");
-                log.debug("Ошибка при отправке ответа: " + "Test ControllerListServlet" + e.getMessage() + " ->(All OK)");
+                log.debug("Error with send answer: " + "Test ControllerListServlet" + e.getMessage() + " ->(All OK)");
             }else{
 //                System.out.println("Ошибка при отправке ответа: " + e.getMessage());
-                log.warn("Ошибка при отправке ответа: " + e.getMessage());
+                log.warn("Error with send answer: " + e.getMessage());
             }
         } finally {
             try {
@@ -53,9 +53,9 @@ public class ControllerListServlet extends HttpServlet implements ObserverForLis
                 }
             } catch (IOException e) {
                 if(e.getMessage().contains("All OK")){
-                    log.debug("Ошибка при закрытии потока вывода: " + "Test ControllerDeleteServlet " + e.getMessage() + " ->(All OK)");
+                    log.debug("Error with closing output stream: " + "Test ControllerDeleteServlet " + e.getMessage() + " ->(All OK)");
                 }else{
-                    log.warn("Ошибка при закрытии потока вывода: " + e.getMessage());
+                    log.warn("Error with closing output stream: " + e.getMessage());
                 }
             }
         }
